@@ -1,0 +1,15 @@
+@echo off
+call "D:\Program Files (x86)\Microsoft Visual Studio2010\VC\bin\amd64\vcvars64.bat"
+
+REM Set paths of mongo-c-driver
+SET MONGOC_ROOT=C:\lib\mongo-c-driver\1.13.1
+SET MONGOC_LIB=C:\lib\mongo-c-driver\1.13.1\lib
+REM Set paths of GDAL-1.11.4
+SET GDAL_DIR=C:\lib\gdal\1-11-4-vs2010x64
+SET GDAL_ROOT=C:\lib\gdal\1-11-4-vs2010x64
+SET GDAL_DATA=%GDAL_DIR%\bin\gdal-data
+SET GDAL_PATHS=%GDAL_DIR%\bin;%GDAL_DIR%\bin\gdal\apps;%GDAL_DIR%\bin\proj\apps;%GDAL_DIR%\bin\curl;
+REM Insert necessary path to PATH
+SET PATH=%MONGOC_LIB%;%MONGOC_ROOT%;%GDAL_PATHS%;%PATH%
+REM Add msys64 binary directory to PATH temporarily to use Git
+REM set PATH="C:/msys64/usr/bin";%PATH%
