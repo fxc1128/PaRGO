@@ -64,7 +64,11 @@ int main(int argc, char *argv[])
         RasterLayer<double> *tmpLayer=new RasterLayer<double>("unnamed");
         weightLayerVec.push_back(tmpLayer);
         weightLayerVec[i]->readNeighborhood(neighborfile);
+<<<<<<< HEAD
+        weightLayerVec[i]->readFile(weightfilenameVec[i].c_str(), ROWWISE_DCMP);
+=======
         weightLayerVec[i]->readFile(weightfilenameVec[i].c_str());
+>>>>>>> 9cb6511736f593e9cfff5200a58758514dc246bc
     }
     
     RasterLayer<double> scaLayer("scaLayer");

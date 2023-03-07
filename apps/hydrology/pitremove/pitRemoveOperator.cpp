@@ -33,7 +33,12 @@ bool PitRemoveOperator::Operator(const CellCoord& coord, bool operFlag) {
     Neighborhood<double>& nbrhoodD = *(_pDEMNbrhood);
     int iNeighborCells = (int)sqrt((double)nbrhoodD.size()) / 2;
 
+<<<<<<< HEAD
+    double gap1 = 0.0005;
+	double gap2 = gap1 * ((double)sqrt((double)2));
+=======
     double gap = 0.0005;
+>>>>>>> 9cb6511736f593e9cfff5200a58758514dc246bc
 
     int i, j;
     if (num == 0) {
@@ -53,9 +58,24 @@ bool PitRemoveOperator::Operator(const CellCoord& coord, bool operFlag) {
         if (fabs(dem[iRow][iCol] - noData) <= Eps || wdem[iRow][iCol] <= dem[iRow][iCol]) {
             return true;
         }
+<<<<<<< HEAD
+		for (int k = 0; k < 9; k++){
+
+
+		}
+		int dir = 0;
+		double gap = 0.;
+        for (i = iRow - iNeighborCells; i <= iRow + iNeighborCells; i++) {
+            for (j = iCol - iNeighborCells; j <= iCol + iNeighborCells; j++) {
+				if (dir % 2 == 0) // different gap in different directions --FXC
+					gap = gap2;
+				else
+					gap = gap1;
+=======
 
         for (i = iRow - iNeighborCells; i <= iRow + iNeighborCells; i++) {
             for (j = iCol - iNeighborCells; j <= iCol + iNeighborCells; j++) {
+>>>>>>> 9cb6511736f593e9cfff5200a58758514dc246bc
                 if ((dem[iRow][iCol] >= (wdem[i][j] + gap)) || fabs(wdem[i][j] - noData) < Eps) {
                     wdem[iRow][iCol] = dem[iRow][iCol];
                     Termination = 0;
@@ -63,7 +83,11 @@ bool PitRemoveOperator::Operator(const CellCoord& coord, bool operFlag) {
                     wdem[iRow][iCol] = wdem[i][j] + gap;
                     Termination = 0;
                 }
+<<<<<<< HEAD
+				dir++;
+=======
 
+>>>>>>> 9cb6511736f593e9cfff5200a58758514dc246bc
             }
         }
     }
