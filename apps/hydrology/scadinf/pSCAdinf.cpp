@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 	
 	RasterLayer<double> dinfLayer("dinfLayer");
 	dinfLayer.readNeighborhood(neighborfile);  
-	dinfLayer.readFile(inputfilename,ROWWISE_DCMP);
+	dinfLayer.readFile(inputfilename, ROWWISE_DCMP);
 	
 	RasterLayer<double> scaLayer("scaLayer");
     scaLayer.copyLayerInfo(dinfLayer);

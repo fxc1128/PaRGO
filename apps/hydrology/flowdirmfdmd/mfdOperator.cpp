@@ -58,11 +58,11 @@ bool MFDOperator::Operator(const CellCoord &coord,bool operFlag)
         }
         return true;
     }
+	
     //if(fabs(demL[iRow][iCol] - _noData) > Eps){
-        for( int i=0; i<8; ++i ){
+        for( int i = 0; i < 8; ++i ){
             (*weightLs[i])[iRow][iCol] = 0.0;
         }
-		//cout<<rowNum<<colNum<<endl;
 		//double d[9];//邻域栅格高程
 		int dir = 0;//邻域栅格编号
 		double maxDiffVal = 0.0;//最大坡降正切值
@@ -72,8 +72,8 @@ bool MFDOperator::Operator(const CellCoord &coord,bool operFlag)
 
         // TODO: Some commonly used constants should be predefined in a high precision, e.g., SQ2 = 1.4142135623730951
         // Refer to the origin implementation in SimDTA/src/modMFD.bas, start from line 457. --LJ
-        for(int tRow=iRow-iNeighborCells; tRow<=iRow+iNeighborCells; tRow++){
-            for(int tCol=iCol-iNeighborCells; tCol<=iCol+iNeighborCells; tCol++){
+        for(int tRow = iRow-iNeighborCells; tRow <= iRow+iNeighborCells; tRow++){
+            for(int tCol = iCol-iNeighborCells; tCol <= iCol+iNeighborCells; tCol++){
                 if(fabs(demL[tRow][tCol] - _noData) <= Eps){
                     //if(dir<4)
                     //	*(weightLs[dir])[iRow][iCol] = 0;
@@ -87,11 +87,11 @@ bool MFDOperator::Operator(const CellCoord &coord,bool operFlag)
                         l[dir] = 0.0;
                     }else{
                         if(dir==0||dir==2||dir==6||dir==8){
-                            diffVal[dir] = (demL[iRow][iCol]-demL[tRow][tCol])/(1.414*_cellSize);
-                            l[dir] = 0.354*_cellSize; //? -- sqrt(2)/4  Should be precisely predefined! --LJ
+                            diffVal[dir] = (demL[iRow][iCol]-demL[tRow][tCol])/(((double)sqrt((double)2)) * _cellSize);//1.41->sqrt(2) --FXC
+                            l[dir] = ((double)sqrt((double)2)) / 4 * _cellSize; //? -- sqrt(2)/4  Should be precisely predefined! --LJ
                         }else{
                             diffVal[dir] = (demL[iRow][iCol]-demL[tRow][tCol])/_cellSize;
-                            l[dir] = 0.5*_cellSize;
+                            l[dir] = 0.5 * _cellSize;
                         }
                         if (diffVal[dir] > maxDiffVal)	
                             maxDiffVal = diffVal[dir];
@@ -102,17 +102,17 @@ bool MFDOperator::Operator(const CellCoord &coord,bool operFlag)
         }
         if(maxDiffVal > 1)
             maxDiffVal = 1;
-        pe = (1-slpExp)*maxDiffVal + slpExp;
-        double sum = 0.0;
-        for(int i=0;i<9;i++){
-            sum += pow(diffVal[i],pe)*l[i];
+		pe = (10 - slpExp) * maxDiffVal + slpExp; //1->10 --FXC    		
+		double sum = 0.0;
+        for(int i = 0;i < 9;i++){
+            sum += pow(diffVal[i], pe) * l[i];
         }
         if(sum > 0){
-            for(int i=0;i<4;i++){
-                (*weightLs[i])[iRow][iCol] = (pow(diffVal[i],pe)*l[i])/sum ;
+            for(int i = 0;i < 4;i++){
+                (*weightLs[i])[iRow][iCol] = (pow(diffVal[i], pe) * l[i]) / sum ;
             }
-            for(int i=5;i<9;i++){
-                (*weightLs[i-1])[iRow][iCol] = (pow(diffVal[i],pe)*l[i])/sum ;
+            for(int i = 5;i < 9;i++){
+                (*weightLs[i-1])[iRow][iCol] = (pow(diffVal[i], pe) * l[i]) / sum ;
             }
         }
     //}

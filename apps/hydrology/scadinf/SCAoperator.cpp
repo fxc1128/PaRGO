@@ -61,8 +61,8 @@ bool DinfOperator::Operator(const CellCoord& coord, bool operFlag) {
 	double dir;
 	double p=0.;
 	double lenx,leny;
-	lenx=iNeighborCells*cellSize;
-	leny=iNeighborCells*cellSize;
+	lenx = iNeighborCells * cellSize;
+	leny = iNeighborCells * cellSize;
 	int I1[] = {0,-1,-1,0,0,1,1,0 };
 	int J1[] = {1,0,0,-1,-1,0,0,1};
 	int I2[] = {-1,-1,-1,-1,1,1,1,1};
@@ -71,7 +71,6 @@ bool DinfOperator::Operator(const CellCoord& coord, bool operFlag) {
 	int d2[] = {0,1,1,0,-1,-1,-1,0,1};
 	
 	if (num == 0) {
-
         if (fabs(dinf[iRow][iCol] - noData) < Eps) {
             degreeL[iRow][iCol] = -2; //init
             scaL[iRow][iCol] = noData;
@@ -89,60 +88,47 @@ bool DinfOperator::Operator(const CellCoord& coord, bool operFlag) {
     }
 	
 	int tRow,tCol;
-    if (num == 1) {
-        
-		for(int k=1;k<=8;k++){
-			tRow=d1[k]+iRow;
-			tCol=d2[k]+iCol;
-			if(!fabs(dinf[tRow][tCol]-noData)<Eps){
-				dir=dinf[tRow][tCol];
-				p=prop(dir,(k+4)%8,lenx,leny);
-
-				if(p>0.0){
-				
-					if(!fabs(dinf[iRow][iCol]-noData)<Eps){
+    if (num == 1) {      
+		for(int k = 1;k <= 8;k++){
+			tRow = d1[k] + iRow;
+			tCol = d2[k] + iCol;
+			if(!fabs(dinf[tRow][tCol] - noData) < Eps){
+				dir = dinf[tRow][tCol];
+				p = prop(dir, (k + 4) % 8, lenx, leny);
+				if(p > 0.0){				
+					if(!fabs(dinf[iRow][iCol] - noData) < Eps){
 						degreeL[iRow][iCol]++;
 					}
 				}
 			}
-		}
-
-		
+		}		
         if (iRow == _maxRow && iCol == _maxCol) {
             MPI_Barrier(MPI_COMM_WORLD);
             num = 2;
-            Termination = 0;
-			
+            Termination = 0;		
         }
         return true;
     }
 
 	if (degreeL[iRow][iCol] <= 0 && !(iRow == _maxRow && iCol == _maxCol)) {
         return true;
-    }
-
-	
-	
-	for(int k=1;k<=8;k++){
-			tRow=d1[k]+iRow;
-			tCol=d2[k]+iCol;
-			dir=dinf[tRow][tCol];
-			if(fabs(dir-noData)>Eps&&(degreeL[tRow][tCol]==0)){
-				p=prop(dir,(k+4)%8,lenx,leny);
-
-				if(p>0.0){
-					scaL[iRow][iCol] =scaL[iRow][iCol] + scaL[tRow][tCol]*p;
-					degreeL[iRow][iCol]--;
-					
-					if (degreeL[iRow][iCol] == 0) 
-						degreeL[iRow][iCol] = -1;
-					
-				}
+    }	
+	for(int k = 1;k <= 8;k++){
+		tRow = d1[k] + iRow;
+		tCol = d2[k] + iCol;
+		dir = dinf[tRow][tCol];
+		if(fabs(dir - noData) > Eps&&(degreeL[tRow][tCol] == 0)){
+			p = prop(dir, (k + 4) % 8, lenx, leny);
+			if(p > 0.0){
+				scaL[iRow][iCol] = scaL[iRow][iCol] + scaL[tRow][tCol] * p;
+				degreeL[iRow][iCol]--;	
+				if (degreeL[iRow][iCol] == 0) 
+					degreeL[iRow][iCol] = -1;	
+			}
 		}
 	}
 
     if (iRow == _maxRow && iCol == _maxCol) {
-		
         MPI_Barrier(MPI_COMM_WORLD);
         int minRow = _pDinfLayer->_pMetaData->_localworkBR.minIRow();
         int minCol = _pDinfLayer->_pMetaData->_localworkBR.minICol();

@@ -63,6 +63,10 @@ SET(THRESHOLDFILES ${THRESHOLDFILES} ${GPRO_SRCS})
 FILE(GLOB WATERSHEDFILES ./watershed/*.cpp)
 SET(WATERSHEDFILES ${WATERSHEDFILES} ${GPRO_SRCS})
 
+FILE(GLOB PDFILES ./PeukerDouglas/*.cpp)
+SET(PDFILES ${PDFILES} ${GPRO_SRCS})
+
+ADD_EXECUTABLE(PeukerDouglas ${PDFILES})
 ADD_EXECUTABLE(pitremove ${PITREMFILES})
 ADD_EXECUTABLE(Largepitremove ${LPITREMFILES})
 ADD_EXECUTABLE(flowdird8 ${D8FILES})
@@ -97,6 +101,7 @@ SET(HYDRO_TARGETS pitremove
 	  stream
 	  threshold
 	  watershed
+	  PeukerDouglas
                   )
 
 foreach (c_target ${HYDRO_TARGETS})

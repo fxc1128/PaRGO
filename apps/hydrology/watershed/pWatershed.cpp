@@ -23,6 +23,7 @@
 #include "rasterLayer.h"
 #include "application.h"
 #include "wsOperator.h"
+#include "LargeareaProcess.h"
 #include "communication.h"
 
 using namespace GPRO;
@@ -51,9 +52,7 @@ int main(int argc, char *argv[])
         Usage("Too few arguments to run this program.");
 	}
 	// Input arguments
-	//char* demfilename = nullptr;
 	char* dirfilename = nullptr;
-	//char* scafilename = nullptr;
 	char* netfilename = nullptr;
 	char* neighborfile = nullptr;
 	char* outfile=nullptr;
@@ -102,13 +101,10 @@ int main(int argc, char *argv[])
 			}
 		}else { // Simple Usage
             if (!simpleusage) Usage("DO NOT mix the Full and Simple usages!");
-            //demfilename = argv[1];
             dirfilename = argv[1];
-            //scafilename = argv[3];
 			netfilename = argv[2];
 			neighborfile = argv[3];
 			outfile = argv[4];
-			//thresh = atof(argv[5]);
 			break;
         }
 	}
@@ -120,11 +116,9 @@ int main(int argc, char *argv[])
     }
 	
 	Application::START(MPI_Type, argc, argv); //init
-	/*
-	RasterLayer<double> demLayer("demLayer"); //创建图层
-	demLayer.readNeighborhood(neighborfile);  //读取分析窗口文件
-	demLayer.readFile(demfilename,ROWWISE_DCMP);  //读取栅格数据//add rowwise_dcmp
-	*/
+
+	LargeOperator LO;
+
 	RasterLayer<double> netLayer("netaLayer"); //创建图层
 	netLayer.readNeighborhood(neighborfile);
 	netLayer.readFile(netfilename,ROWWISE_DCMP);  //读取栅格数据//add rowwise_dcmp
@@ -132,10 +126,6 @@ int main(int argc, char *argv[])
 	RasterLayer<double> dirLayer("dirLayer"); //创建图层
 	dirLayer.readNeighborhood(neighborfile);
 	dirLayer.readFile(dirfilename,ROWWISE_DCMP);  //读取栅格数据//add rowwise_d
-	
-	//RasterLayer<double> scaLayer("scaLayer"); //创建图层
-	//scaLayer.readNeighborhood(neighborfile);
-	//scaLayer.readFile(scafilename,ROWWISE_DCMP);  //读取栅格数据//add rowwise_dcmp
 	
 	RasterLayer<double> outLayer("outLayer"); //创建图层
 	outLayer.copyLayerInfo(netLayer);
@@ -145,15 +135,10 @@ int main(int argc, char *argv[])
 	MPI_Barrier(MPI_COMM_WORLD);
 	starttime = MPI_Wtime();
 	
-	
-	//cout<<"thresh"<<thresh<<endl;
-	wsOperator wsOper;	
-		
+	wsOperator wsOper;		
 	wsOper.netLayer(netLayer);
-	//DPOper.areaLayer(scaLayer);
 	wsOper.dirLayer(dirLayer);
-	//DPOper.demLayer(demLayer);
-	wsOper.orderLayer(outLayer);
+	wsOper.wsLayer(outLayer);
 	wsOper.Run();
 	
 	

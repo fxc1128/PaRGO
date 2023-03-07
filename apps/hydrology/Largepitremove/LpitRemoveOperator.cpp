@@ -12,117 +12,20 @@ demLayer(RasterLayer<double>& layerD) {
 
     Configure(_pDEMLayer, false);
 }
-void PitRemoveOperator::wslayer(RasterLayer<double>& layerD) {
-    _pwsLayer = &layerD;
-    Configure(_pwsLayer, false);
-}
 
-void PitRemoveOperator::outLayer(RasterLayer<double>& layerD) {
-    _pOutLayer = &layerD;
-    Configure(_pOutLayer, false);
-}
 void PitRemoveOperator::wdemLayer(RasterLayer<double>& layerD) {
     _pwDEMLayer = &layerD;
 
     Configure(_pwDEMLayer, true);
 }
-
+void PitRemoveOperator::outLayer(RasterLayer<double>& layerD) {
+    _pOutLayer = &layerD;
+    Configure(_pOutLayer, false);
+}
 bool PitRemoveOperator::isTermination() {
     return flag;
 }
-void PitRemoveOperator::init(RasterLayer<double>& layerD){
-	_pwDEMLayer=&layerD;
-	CellSpace<double>& wdem = *(_pwDEMLayer->cellSpace());
-	
-	int maxRow = _pwDEMLayer->_pMetaData->_localworkBR.maxIRow();
-    int maxCol = _pwDEMLayer->_pMetaData->_localworkBR.maxICol();
-	int minRow = _pwDEMLayer->_pMetaData->_localworkBR.minIRow();
-	int minCol = _pwDEMLayer->_pMetaData->_localworkBR.minICol();
-	for(int i=minRow;i<=maxRow;i++){
-		for(int j=minCol;j<=maxCol;j++){
-			wdem[i][j]=0;
-		}	
-	}
-}
-void PitRemoveOperator::writesca(RasterLayer<double>& layerD,CellCoord nw){
-	_pwkLayer=&layerD;
-	CellSpace<double>& wk = *(_pwkLayer->cellSpace());
-	CellSpace<double>& wdem = *(_pwDEMLayer->cellSpace());
-	//CellSpace<double>& dir = *(_pD8Layer->cellSpace());
-	int maxRow = _pwkLayer->_pMetaData->_localworkBR.maxIRow();
-    int maxCol = _pwkLayer->_pMetaData->_localworkBR.maxICol();
-	int d1[9]={-1,-1,-1,0,0,0,1,1,1};
-	int d2[9]={-1,0,1,-1,0,1,-1,0,1};
-	int minRow = _pwkLayer->_pMetaData->_localworkBR.minIRow();
-	int minCol = _pwkLayer->_pMetaData->_localworkBR.minICol();
-	int gi = nw.iRow()-1;//_pwkLayer->_pMetaData->_MBR.minIRow();
-	int gj = nw.iCol();//_pwkLayer->_pMetaData->_MBR.minICol();
-	//cout<<"globali:"<<gi<<" globalj:"<<gj<<endl;
-	//cout<<"scalayer"<<_pSCALayer->_pMetaData->_localworkBR.maxIRow()<<endl;
-	int ti,tj;
-	short d;
-	double s=0.;
-	for(int i=minRow;i<=maxRow;i++){
-		for(int j=minCol;j<=maxCol;j++){
-			//cout<<"sca:"<<sca[i+gi][j+gj]<<endl;
-			//cout<<"wk:"<<wk[i][j]<<endl;
-			if(fabs(wdem[i+gi][j+gj]-noData)<=Eps||wdem[i+gi][j+gj]<wk[i][j]){
-				wdem[i+gi][j+gj]=wk[i][j];
-				//cout<<"wk:"<<wk[i][j]<<" sca:"<<sca[i+gi][j+gj]<<endl;
-			}
-		}
-	}
-}
-void PitRemoveOperator::getarea(int &minrow,int &mincol,int &nrow,int &ncol, int _g,int buf,int id) {
-	CellSpace<double>& ws = *(_pwsLayer->cellSpace());
 
-	int pi,pj,qi,qj;
-	int minRow = _pwsLayer->_pMetaData->_MBR.minIRow();
-	int minCol = _pwsLayer->_pMetaData->_MBR.minICol();
-	int maxRow = _pwsLayer->_pMetaData->_MBR.maxIRow();
-	int maxCol = _pwsLayer->_pMetaData->_MBR.maxICol();
-
-	pi=-2;
-	pj=-2;
-	qi=-2;
-	qj=-2;
-	for(int i=minRow;i<=maxRow;i++){
-		for(int j=minCol;j<=maxCol;j++){
-			if(ws[i][j]==id){
-				if(i<pi||pi==-2)
-					pi=i;
-				if(j<pj||pj==-2)
-					pj=j;
-				if(i>qi||qi==-2)
-					qi=i;
-				if(j>qj||qj==-2)
-					qj=j;
-			}
-		}
-	}
-	
-	if((pi-buf)>minRow)
-		pi=pi-buf;
-	else
-		pi=minRow+1;
-	if((pj-buf)>minCol)
-		pj=pj-buf;
-	else
-		pj=minCol+1;
-	if((qi+buf)<maxRow)
-		qi=qi+buf;
-	else
-		qi=maxRow-1;
-	if((qj+buf)<maxCol)
-		qj=qj+buf;
-	else
-		qj=maxCol-1;
-
-	minrow=pi*_g;
-	mincol=pj*_g;
-	nrow=(qi-pi+1)*_g;
-	ncol=(qj-pj+1)*_g;
-}
 bool PitRemoveOperator::Operator(const CellCoord& coord, bool operFlag) {
 
     CellSpace<double>& dem = *(_pDEMLayer->cellSpace());
@@ -137,7 +40,7 @@ bool PitRemoveOperator::Operator(const CellCoord& coord, bool operFlag) {
     double gap = 0.0005;
 
     int i, j;
-    if (num == 0) {
+	if(num == 0) {
         if (fabs(dem[iRow][iCol] - noData) > Eps) {
             wdem[iRow][iCol] = 10000.0;
 			if(out[iRow][iCol]>dem[iRow][iCol])

@@ -111,16 +111,16 @@ int main(int argc, char* argv[]) {
             break;
         }
     }
-    if (!(slpExp >= 0 || slpExp <= 1)) {
-        cerr << "please input slope exponent between 0-1.";
+    if (!(slpExp >= 0 && slpExp <= 10)) {
+        cerr << "please input slope exponent between 0-10.";
         return 0;
     }
-
+	cout<<"slpexp:"<<slpExp<<endl;
     Application::START(MPI_Type, argc, argv); // init MPI environment
 
     RasterLayer<double> demLayer("demLayer"); // create raster layer (DEM)
     demLayer.readNeighborhood(neighborfile);  // read analysing neighbor window for raster layer
-    demLayer.readFile(inputfilename);         // read data of layer (DEM)
+    demLayer.readFile(inputfilename, ROWWISE_DCMP);         // read data of layer (DEM)
 
     // creat output filenamme for weight matrix layers
     vector<RasterLayer<double>*> weightLayers;

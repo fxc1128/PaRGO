@@ -9,9 +9,7 @@ FILE(GLOB DEMO2FILES ./demo2/*.cpp)
 SET(DEMO2FILES ${DEMO2FILES} ${GPRO_SRCS})
 ADD_EXECUTABLE(demo2_slope ${DEMO2FILES})
 
-FILE(GLOB PDFILES ./PeukerDouglas/*.cpp)
-SET(PDFILES ${PDFILES} ${GPRO_SRCS})
-ADD_EXECUTABLE(PeukerDouglas ${PDFILES})
+
 
 ######## $1: variable, name it whatever
 ######## $2: directory name of your app
@@ -23,7 +21,6 @@ ADD_EXECUTABLE(PeukerDouglas ${PDFILES})
 
 SET(DEMO_TARGETS demo1_reclassify
                  demo2_slope
-	 PeukerDouglas
                 ######## Add your app here, replace $2 ########
                 #$2
                 ######## Add your app here, replace $2 ########

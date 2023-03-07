@@ -23,6 +23,7 @@
 #include "rasterLayer.h"
 #include "application.h"
 #include "LpitRemoveOperator.h"
+#include "LargeareaProcess.h"
 #include "mpi.h"
 
 using namespace std;
@@ -156,15 +157,22 @@ int main(int argc, char* argv[]) {
     Application::START(MPI_Type, argc, argv); //parallel version
 
 	int pi,pj,qi,qj;
-	PitRemoveOperator Oper1;
+	LargeOperator LO;
+	LO.srcfile=inputfilename;
+	LO.outputfile=outputfilename;
+	LO.wsfile=inputwsfile;
+	LO.nbr=neighborfile;
 	if(init){
+		LO.initialfile();
+		/*
 		RasterLayer<double> dLayer("dLayer");
 		dLayer.readNeighborhood(neighborfile);  
 		dLayer.readFile(inputfilename, NON_DCMP);
 		RasterLayer<double> initLayer("initLayer");
 		initLayer.copyLayerInfo(dLayer);
 		Oper1.init(initLayer);
-		initLayer.writeFile(outputfilename);	
+		initLayer.writeFile(outputfilename);
+		*/
 		cout<<"create initial layer done"<<endl;
 		//MPI_Finalize();
 		MPI_Barrier(MPI_COMM_WORLD);
@@ -174,6 +182,9 @@ int main(int argc, char* argv[]) {
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
 	//read watershed data and get the boundary coordinates of each sub-basin
+	CoordBR sub=LO.getsubarea(pi,pj,qi,qj,_g,buf,id);
+	cout<<"pi:"<<pi<<endl;
+	/*
 	RasterLayer<double> iLayer("iLayer");
 	iLayer.readFile(outputfilename,NON_DCMP);	
 	RasterLayer<double> wsLayer("wsLayer");
@@ -186,7 +197,7 @@ int main(int argc, char* argv[]) {
 	CellCoord nw(pi,pj);
 	CellCoord se(pi+qi-1,pj+qj-1);
 	CoordBR sub(nw,se);
-
+	*/
     RasterLayer<double> demLayer("demLayer");
     demLayer.readNeighborhood(neighborfile);
     demLayer.readFile(inputfilename, sub, ROWWISE_DCMP);
@@ -222,15 +233,20 @@ int main(int argc, char* argv[]) {
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	//write middle data into final data
+
+	LO.pfile=p;
+	LO.writefile(sub.nwCorner());
+	/*
 	RasterLayer<double> Layer("Layer");
 	Layer.readNeighborhood(neighborfile); 	 
 	Layer.readFile(p,NON_DCMP);
 	Oper1.writesca(Layer,nw);
-    endtime1 = MPI_Wtime();
+    
+	*/
+	endtime1 = MPI_Wtime();
     cout << "run time is " << endtime1 - starttime1 << endl;
 
-    iLayer.writeFile(outputfilename);
-
+    //iLayer.writeFile(outputfilename);
     Application::END();
     return 0;
 }
